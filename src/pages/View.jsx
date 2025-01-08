@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import { useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { addToWishlist } from '../redux/slices/wishlistSlice'
 
 
 const View = () => {
+
+  const dispatch = useDispatch()
+  const userWishlist = useSelector(state=>state.wishlistReducer)
 
   const [product,setProduct] = useState({})
    
@@ -21,14 +25,27 @@ const View = () => {
     
   },[])
 
-
+  const handleWishlist =()=>{
+    const existingProduct = userWishlist?.find(item=>item?.id==id)
+    if(existingProduct){
+      alert("Product already in your wishlist")
+    }else{
+      dispatch(addToWishlist(product))
+    }
+  }
 
   return (
     <>
     <Header/>
     <div className='flex flex-col mx-5'>
       <div className='grid grid-cols-2 items-center h-screen'>
-        <img width={'450px'} height={'200px'} src={product?.thumbnail} alt="" />
+        <div>
+          <img width={'450px'} height={'200px'} src={product?.thumbnail} alt="" />
+          <div className='flex justify-between mt-5'>
+                <button onClick={handleWishlist} className='bg-blue-600 text-white p-2'>Add to wishlist</button>
+                <button className='bg-green-600 text-white p-2'>Add to cart</button>
+              </div>
+        </div>
         <div>
            <h3 className='font-bold'>PID : {product?.id}</h3>
            <h1 className='text-5xl font-bold'>{product?.title} </h1>
@@ -37,10 +54,7 @@ const View = () => {
            <h4>Category : {product?.category}</h4>
            <p>
             <span className='font-bold'>Description</span>: {product?.description}
-            <div className='flex justify-between mt-5'>
-              <button className='bg-blue-600 text-white p-2'>Add to wishlist</button>
-              <button className='bg-green-600 text-white p-2'>Add to cart</button>
-            </div>
+            
            </p>
            <h3 className='font-bold'>Client Reviews</h3>
            {
